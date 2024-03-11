@@ -181,7 +181,7 @@ public class Menu extends SimpleYMLSection implements Listener {
             }
             // create a new slots object and add it to list
             try {
-                this.slots.add(new Slots(key, itemsList));
+                this.slots.add(SlotsFactory.createSlots(key, itemsList));
             } catch (final IllegalArgumentException e) {
                 throw new Invalid("slots", e);
             }
@@ -330,6 +330,15 @@ public class Menu extends SimpleYMLSection implements Listener {
         for (final Slots slots : this.slots) {
             if (slots.containsSlot(slot)) {
                 return slots.getItem(profile, slot);
+            }
+        }
+        return null;
+    }
+
+    public PagedSlots getPagedSlotByID(final String queryID) {
+        for (final Slots slots : this.slots) {
+            if (slots instanceof PagedSlots && ((PagedSlots) slots).isEqual(queryID)) {
+                return (PagedSlots) slots;
             }
         }
         return null;

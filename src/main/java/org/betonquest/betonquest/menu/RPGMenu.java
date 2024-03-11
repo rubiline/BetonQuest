@@ -11,6 +11,7 @@ import org.betonquest.betonquest.config.Config;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.menu.betonquest.MenuCondition;
 import org.betonquest.betonquest.menu.betonquest.MenuObjective;
+import org.betonquest.betonquest.menu.betonquest.MenuPageEvent;
 import org.betonquest.betonquest.menu.betonquest.MenuQuestEvent;
 import org.betonquest.betonquest.menu.betonquest.MenuVariable;
 import org.betonquest.betonquest.menu.commands.RPGMenuCommand;
@@ -133,6 +134,7 @@ public class RPGMenu {
         BetonQuest.getInstance().registerConditions("menu", MenuCondition.class);
         BetonQuest.getInstance().registerObjectives("menu", MenuObjective.class);
         BetonQuest.getInstance().registerEvents("menu", MenuQuestEvent.class);
+        BetonQuest.getInstance().registerEvents("menuPage", MenuPageEvent.class);
         BetonQuest.getInstance().registerVariable("menu", MenuVariable.class);
         //load the plugin command
         this.pluginCommand = new RPGMenuCommand(loggerFactory.create(RPGMenuCommand.class));

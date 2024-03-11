@@ -11,42 +11,16 @@ import java.util.List;
  */
 @SuppressWarnings("PMD.CommentRequired")
 public class Slots {
-    private final int start;
-
-    private final int end;
-
-    private final List<MenuItem> items;
-
-    private final Type type;
+    protected final int start;
+    protected final int end;
+    protected final List<MenuItem> items;
+    protected final Type type;
 
     @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidUncheckedExceptionsInSignatures"})
-    public Slots(final String slots, final List<MenuItem> items) throws IllegalArgumentException {
-        if (slots.matches("\\d+")) {
-            this.type = Type.SINGLE;
-            this.start = Integer.parseInt(slots);
-            this.end = start;
-        } else if (slots.matches("\\d+-\\d+")) {
-            this.type = Type.ROW;
-            final int index = slots.indexOf('-');
-            this.start = Integer.parseInt(slots.substring(0, index));
-            this.end = Integer.parseInt(slots.substring(index + 1));
-            if (this.end < this.start) {
-                throw new IllegalArgumentException(slots + ": slot " + end + " must be after " + start);
-            }
-        } else if (slots.matches("\\d+\\*\\d+")) {
-            this.type = Type.RECTANGLE;
-            final int index = slots.indexOf('*');
-            this.start = Integer.parseInt(slots.substring(0, index));
-            this.end = Integer.parseInt(slots.substring(index + 1));
-            if (this.end < this.start) {
-                throw new IllegalArgumentException(slots + ": slot " + end + " must be after " + start);
-            }
-            if ((start % 9) > (end % 9)) {
-                throw new IllegalArgumentException(slots + ": invalid rectangle ");
-            }
-        } else {
-            throw new IllegalArgumentException(slots + " is not a valid slot identifier");
-        }
+    public Slots(final Slots.Type type, final int start, final int end, final List<MenuItem> items) throws IllegalArgumentException {
+        this.type = type;
+        this.start = start;
+        this.end = end;
         this.items = items;
     }
 
@@ -81,15 +55,13 @@ public class Slots {
     public List<Integer> getSlots() {
         final List<Integer> slots = new ArrayList<>();
         switch (type) {
-            case SINGLE:
-                slots.add(start);
-                break;
-            case ROW:
+            case SINGLE -> slots.add(start);
+            case ROW -> {
                 for (int i = start; i <= end; i++) {
                     slots.add(i);
                 }
-                break;
-            case RECTANGLE:
+            }
+            case RECTANGLE -> {
                 int index = start;
                 while (index <= end) {
                     slots.add(index);
@@ -100,7 +72,7 @@ public class Slots {
                         index += 8 - (index % 9) + (start % 9) + 1;
                     }
                 }
-                break;
+            }
         }
         return slots;
     }
@@ -110,18 +82,14 @@ public class Slots {
      * @return if this slots object covers the given slot
      */
     public boolean containsSlot(final int slot) {
-        switch (type) {
-            case SINGLE:
-                return start == slot;
-            case ROW:
-                return slot <= end && slot >= start;
-            case RECTANGLE:
-                return slot <= end && slot >= start
-                        && slot % 9 >= start % 9
-                        && slot % 9 <= end % 9;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case SINGLE -> start == slot;
+            case ROW -> slot <= end && slot >= start;
+            case RECTANGLE -> slot <= end && slot >= start
+                    && slot % 9 >= start % 9
+                    && slot % 9 <= end % 9;
+            default -> false;
+        };
     }
 
     /**
@@ -154,16 +122,20 @@ public class Slots {
             return -1;
         }
         switch (type) {
-            case SINGLE:
+            case SINGLE -> {
                 return 0;
-            case ROW:
+            }
+            case ROW -> {
                 return slot - start;
-            case RECTANGLE:
+            }
+            case RECTANGLE -> {
                 final int rectangleLength = end % 9 - start % 9 + 1;
                 final int rows = slot / 9 - start / 9;
                 return rectangleLength * rows + slot % 9 - start % 9;
-            default:
+            }
+            default -> {
                 return -1;
+            }
         }
     }
 
@@ -194,16 +166,12 @@ public class Slots {
 
     @Override
     public String toString() {
-        switch (type) {
-            case SINGLE:
-                return String.valueOf(start);
-            case ROW:
-                return start + "-" + end;
-            case RECTANGLE:
-                return start + "*" + end;
-            default:
-                return super.toString();
-        }
+        return switch (type) {
+            case SINGLE -> String.valueOf(start);
+            case ROW -> start + "-" + end;
+            case RECTANGLE -> start + "*" + end;
+            default -> super.toString();
+        };
     }
 
     public enum Type {
